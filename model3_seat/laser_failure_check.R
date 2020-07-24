@@ -7,7 +7,7 @@ library(dplyr)
 funcReadCsv <- function(fph) {
   read.csv(fph) %>%
     mutate(tag = substring(prop_tag, 1, 5),
-           prop_value = as.double(prop_value))
+           date_time = as.POSIXct(date_time))
 }
 
 
@@ -31,4 +31,20 @@ names(lt1) <- c("date_time", "laser_tag", "laser_reading",
 
 lt2 <- lt1 %>% filter(third_run_encoder!=0)
 
-write.csv(lt2, file = "laser_position.csv")
+#write.csv(lt2, file = "laser_position.csv")
+
+gt1 <- filter(fff, tag=="02105"&prop_value<500) %>%
+  inner_join(filter(fff, tag=="02005"), by = "date_time") %>%
+  inner_join(filter(fff, tag=="02006"&prop_value<200), by = "date_time")
+gt2 <- select(gt1, date_time, prop_tag.x, prop_value.x)
+names(gt2) <- c("date_time", "prop_tag", "prop_value")
+gt3 <- select(gt1, date_time, prop_tag.y, prop_value.y)
+names(gt3) <- c("date_time", "prop_tag", "prop_value")
+gt4 <- select(gt1, date_time, prop_tag, prop_value)
+gtt <- rbind(gt4, gt3, gt2)
+
+ggplot(gtt, aes(x = date_time, y = prop_value)) +
+  facet_wrap(. ~ prop_tag , ncol = 2, scales = "free") +
+  theme_linedraw(base_size = 20) +
+  geom_point(aes(color = prop_tag)) +
+  labs(x="Test Date", y = "TBD")
