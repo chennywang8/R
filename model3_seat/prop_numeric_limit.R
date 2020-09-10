@@ -15,12 +15,12 @@ funcFilterShp <- function(raw) {
       filter((tag=="02003"&between(prop_value, 700, 800)) |
                (tag=="02012"&between(prop_value, 130, 200)) |
                (tag=="02006"&between(prop_value, 67, 100)) |
-               (tag=="02009"&between(prop_value, 765, 785)) )
+               (tag=="02009"&between(prop_value, 700, 800)) )
 }
 
 
 # ======== MAIN ========
-freg<- "*.csv"
+freg<- "3 1 2 194.csv"
 raw <- list.files('./data_with_version/', pattern = freg,
                   full.names = TRUE, recursive = TRUE) %>%
   lapply(., funcReadRaw) %>%
@@ -59,12 +59,24 @@ ggplot(cdr, aes(x = prop_value, color = sw_version, fill = sw_version)) +
 lt1 <- filter(raw, tag=="02105"&step_status!="Passed") %>%
   left_join(filter(raw, tag=="02005"), by = "date_time") %>%
   left_join(filter(raw, tag=="02006"), by = "date_time") %>%
-  select(date_time, prop_tag.x, prop_value.x, prop_tag.y, prop_value.y,
+  select(date_time, uut_serial_number, prop_tag.x, prop_value.x, prop_tag.y, prop_value.y,
          prop_tag, prop_value, sw_version, station_id) %>%
   arrange(date_time)
-names(lt1) <- c("date_time", "laser_tag", "laser_reading",
+names(lt1) <- c("date_time", "serial_number", "laser_tag", "laser_reading",
                 "second_run_tag", "second_run_encoder",
                 "third_run_tag", "third_run_encoder",
                 "software_version", "station_id")
 
-lt2 <- lt1 %>% filter(third_run_encoder!=0)
+lt2 <- lt1 %>% filter(third_run_encoder!=0 & second_run_encoder!=0)
+lt3 <- filter(raw, tag=="02105"&step_status=="Passed") %>%
+  filter(uut_serial_number %in% unique(lt2$serial_number)) %>%
+  left_join(filter(raw, tag=="02005"), by = "date_time") %>%
+  left_join(filter(raw, tag=="02006"), by = "date_time") %>%
+  select(date_time, uut_serial_number, prop_tag.x, prop_value.x, prop_tag.y, prop_value.y,
+         prop_tag, prop_value, sw_version, station_id) %>%
+  arrange(date_time)
+names(lt3) <- c("date_time", "serial_number", "laser_tag", "laser_reading",
+                "second_run_tag", "second_run_encoder",
+                "third_run_tag", "third_run_encoder",
+                "software_version", "station_id")
+lt3 <- rbind(lt2, lt3)
