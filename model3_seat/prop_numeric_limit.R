@@ -20,7 +20,7 @@ funcFilterShp <- function(raw) {
 
 
 # ======== MAIN ========
-freg<- "3 1 2 194.csv"
+freg<- "*.csv"
 raw <- list.files('./data_with_version/', pattern = freg,
                   full.names = TRUE, recursive = TRUE) %>%
   lapply(., funcReadRaw) %>%
