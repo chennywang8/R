@@ -1,0 +1,10 @@
+{
+  "rv": {
+  "host": "frettrro.prd.my.db.ie.tslans.net",
+  "dbname": "tesla_taskresults",
+  "user": "ac-optda-tus-251105",
+  "password": "[BAZMOw]Ti%#WYPF87;"
+  },
+  "finger": ["leftring_test_%","leftmid_test_%","leftind_test_%","leftpinky_test_%","leftthumb_test_%",
+  "rightring_test_%","rightmid_test_%","rightind_test_%","rightpinky_test_%","rightthumb_test_%"]
+}
